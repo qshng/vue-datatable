@@ -1,29 +1,8 @@
-# vue-dt
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Run your tests
-```
-npm run test
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+* crud datatable with expandable rows to view details
+* row details is retrieved upon expansion via ajax call
+* server side search, sort, pagination
+* show child table on click
+* support multi row edit
+* edit via form, optionally full row inline edit
+* authentication
+* add routing

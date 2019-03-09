@@ -1,14 +1,14 @@
 <template>
-<crud />
+  <DataTable />
 </template>
 
 <script>
-import crud from '@/components/crud'
+import DataTable from '@/components/DataTable'
 
 export default {
   name: 'Home',
-  components: {crud},
-  data () {
+  components: { DataTable },
+  data() {
     return {
       //
     }

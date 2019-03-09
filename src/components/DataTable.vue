@@ -3,8 +3,10 @@
     <v-toolbar flat color="white">
       <v-toolbar-title>My CRUD</v-toolbar-title>
       <v-divider class="mx-2" inset vertical></v-divider>
-
       <v-spacer></v-spacer>
+      <v-btn color="primary" dark @click="expand = !expand"
+        >{{ expand ? 'Close' : 'Keep' }} other rows</v-btn
+      >
       <v-text-field
         v-model="search"
         append-icon="search"
@@ -73,27 +75,31 @@
       :pagination.sync="pagination"
       :total-items="totalDesserts"
       :loading="loading"
+      :expand="expand"
       class="elevation-1"
-      hide-actions
       item-key="name"
-      expand
     >
       <template v-slot:items="props">
-        <tr @click="props.expanded = !props.expanded">
+        <tr @click="showRelated">
+          <td class="text-xs-right">
+            <v-icon @click.stop="props.expanded = !props.expanded"
+              >unfold_more</v-icon
+            >
+          </td>
           <td>{{ props.item.name }}</td>
           <td class="text-xs-right">{{ props.item.calories }}</td>
           <td class="text-xs-right">{{ props.item.fat }}</td>
           <td class="text-xs-right">{{ props.item.carbs }}</td>
           <td class="text-xs-right">{{ props.item.protein }}</td>
           <td class="justify-center layout px-0">
-            <v-icon small class="mr-2" @click="editItem(props.item)"
+            <v-icon small class="mr-2" @click.stop="editItem(props.item)"
               >edit</v-icon
             >
-            <v-icon small @click="deleteItem(props.item)">delete</v-icon>
+            <v-icon small @click.stop="deleteItem(props.item)">delete</v-icon>
           </td>
         </tr>
       </template>
-      <template slot="expand" slot-scope="props">
+      <template v-slot:expand="props">
         <tbody>
           <tr>
             <td>{{ props.item.name }}</td>
@@ -106,7 +112,7 @@
         </tbody>
       </template>
       <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">Reset</v-btn>
+        <v-btn color="primary">Reset</v-btn>
       </template>
       <v-alert v-slot:no-results :value="true" color="error" icon="warning"
         >Your search for "{{ search }}" found no results.</v-alert
@@ -118,12 +124,20 @@
 <script>
 export default {
   data: () => ({
+    totalDesserts: 0,
     dialog: false,
     desserts: [],
     loading: true,
     pagination: {},
     search: '',
+    expand: false,
+    select: false,
+    selectedIndex: -1,
     headers: [
+      {
+        sortable: false,
+        value: 'name'
+      },
       {
         text: 'Dessert (100g serving)',
         align: 'left',
@@ -171,9 +185,6 @@ export default {
       deep: true
     }
   },
-  created() {
-    this.initialize()
-  },
   mounted() {
     this.getDataFromApi().then(data => {
       this.desserts = data.items
@@ -181,6 +192,12 @@ export default {
     })
   },
   methods: {
+    showRelated(item) {
+      this.selectedIndex = this.desserts.indexOf(item)
+      this.selectedItem = Object.assign({}, item)
+      this.select = true
+      console.log(this.selectedItem)
+    },
     getDataFromApi() {
       this.loading = true
       return new Promise((resolve, reject) => {
